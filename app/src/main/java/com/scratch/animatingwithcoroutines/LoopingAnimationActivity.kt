@@ -52,7 +52,7 @@ class LoopingAnimationActivity : AppCompatActivity(), CoroutineScope {
 
     private suspend fun playLoopedAnimation(animation: LottieAnimationView) = coroutineScope {
         // Get the animation
-        val composition = animation.composition ?: animation.waitForComposition()
+        val composition = animation.composition ?: animation.suspendForComposition()
         val endLoopEndFrame = composition.durationFrames.toInt() - 1
 
         // Restart
@@ -62,7 +62,7 @@ class LoopingAnimationActivity : AppCompatActivity(), CoroutineScope {
 
         // Box wiggles
         val repeatJob = launch {
-            animation.waitForRepetitions(2)
+            animation.suspendForRepetitions(2)
         }
         animation.setOnClickListener { repeatJob.cancel() }
         repeatJob.join()
@@ -72,7 +72,7 @@ class LoopingAnimationActivity : AppCompatActivity(), CoroutineScope {
         animation.setMaxFrame(endLoopEndFrame)
 
         // Coin floating
-        animation.waitForFrame(END_LOOP_START_FRAME)
+        animation.suspendForFrame(END_LOOP_START_FRAME)
         animation.setMinFrame(END_LOOP_START_FRAME)
     }
 }

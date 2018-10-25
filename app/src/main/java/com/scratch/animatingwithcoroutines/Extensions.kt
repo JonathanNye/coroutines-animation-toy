@@ -17,16 +17,16 @@ fun LottieAnimationView.setLoopBounds(start: Int, end: Int) {
     setMaxFrame(end)
 }
 
-suspend fun LottieAnimationView.waitForComposition() = suspendCoroutine<LottieComposition> { continuation ->
+suspend fun LottieAnimationView.suspendForComposition() = suspendCoroutine<LottieComposition> { continuation ->
     addLottieOnCompositionLoadedListener { composition ->
         continuation.resume(composition)
     }
 }
 
-suspend fun LottieAnimationView.waitForFrame(targetFrame: Int) = suspendCoroutine<Unit> { continuation ->
+suspend fun LottieAnimationView.suspendForFrame(targetFrame: Int) = suspendCoroutine<Unit> { continuation ->
     addAnimatorUpdateListener(object: ValueAnimator.AnimatorUpdateListener {
         override fun onAnimationUpdate(animation: ValueAnimator?) {
-            if (this@waitForFrame.frame >= targetFrame) {
+            if (this@suspendForFrame.frame >= targetFrame) {
                 removeUpdateListener(this)
                 continuation.resume(Unit)
             }
@@ -34,7 +34,7 @@ suspend fun LottieAnimationView.waitForFrame(targetFrame: Int) = suspendCoroutin
     })
 }
 
-suspend fun LottieAnimationView.waitForRepetitions(targetRepetitions: Int) = suspendCancellableCoroutine<Unit> { continuation ->
+suspend fun LottieAnimationView.suspendForRepetitions(targetRepetitions: Int) = suspendCancellableCoroutine<Unit> { continuation ->
     val listener = object: AnimatorListenerAdapter() {
         var repetitions = 0
         override fun onAnimationRepeat(animation: Animator?) {
@@ -52,9 +52,11 @@ suspend fun LottieAnimationView.waitForRepetitions(targetRepetitions: Int) = sus
 }
 
 // ====================
+// These extensions are specific to the "interactive" variant of the animation
+// ====================
 
 
-suspend fun LottieAnimationView.waitForRepetitions(targetRepetitions: Int, onRepeat: ((Int) -> Unit)) = suspendCancellableCoroutine<Unit> { continuation ->
+suspend fun LottieAnimationView.suspendForRepetitions(targetRepetitions: Int, onRepeat: ((Int) -> Unit)) = suspendCancellableCoroutine<Unit> { continuation ->
     val listener = object: AnimatorListenerAdapter() {
         var repetitions = 0
         override fun onAnimationRepeat(animation: Animator?) {
@@ -72,7 +74,7 @@ suspend fun LottieAnimationView.waitForRepetitions(targetRepetitions: Int, onRep
     addAnimatorListener(listener)
 }
 
-suspend fun View.waitForClick(animation: LottieAnimationView) = suspendCoroutine<Unit> { continuation ->
+suspend fun View.suspendForClick(animation: LottieAnimationView) = suspendCoroutine<Unit> { continuation ->
     visibility = VISIBLE
     animation.pauseAnimation()
     setOnClickListener { v ->

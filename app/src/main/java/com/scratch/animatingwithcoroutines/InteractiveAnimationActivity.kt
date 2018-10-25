@@ -57,7 +57,7 @@ class InteractiveAnimationActivity : AppCompatActivity(), CoroutineScope {
     private suspend fun playLoopedAnimation(animation: LottieAnimationView) = coroutineScope {
         // Get the animation
         continueButton.visibility = INVISIBLE
-        val composition = animation.composition ?: animation.waitForComposition()
+        val composition = animation.composition ?: animation.suspendForComposition()
         val endLoopEndFrame = composition.durationFrames.toInt() - 1
 
         // Restart
@@ -65,11 +65,11 @@ class InteractiveAnimationActivity : AppCompatActivity(), CoroutineScope {
         animation.frame = 0
         animation.setLoopBounds(0, START_LOOP_END_FRAME)
         animation.playAnimation()
-        continueButton.waitForClick(animation)
+        continueButton.suspendForClick(animation)
 
         // Box wiggles
         val repeatJob = launch {
-            animation.waitForRepetitions(2) { rep ->
+            animation.suspendForRepetitions(2) { rep ->
                 debug("repetition $rep")
             }
         }
@@ -79,15 +79,15 @@ class InteractiveAnimationActivity : AppCompatActivity(), CoroutineScope {
 
         // Box opens, coin flies out
         animation.setMaxFrame(endLoopEndFrame)
-        animation.waitForFrame(START_LOOP_END_FRAME)
+        animation.suspendForFrame(START_LOOP_END_FRAME)
         debug("box opening")
-        continueButton.waitForClick(animation)
+        continueButton.suspendForClick(animation)
         animation.resumeAnimation()
 
         // Coin floating
-        animation.waitForFrame(END_LOOP_START_FRAME)
+        animation.suspendForFrame(END_LOOP_START_FRAME)
         debug("coin floating")
-        continueButton.waitForClick(animation)
+        continueButton.suspendForClick(animation)
         animation.resumeAnimation()
         animation.setMinFrame(END_LOOP_START_FRAME)
     }
