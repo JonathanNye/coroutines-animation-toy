@@ -1,19 +1,15 @@
 package com.scratch.animatingwithcoroutines
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ValueAnimator
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
-import com.airbnb.lottie.LottieComposition
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class LoopingAnimationActivity : AppCompatActivity(), CoroutineScope {
 
@@ -54,45 +50,6 @@ class LoopingAnimationActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private fun LottieAnimationView.setLoopBounds(start: Int, end: Int) {
-        setMinFrame(start)
-        setMaxFrame(end)
-    }
-
-    private suspend fun LottieAnimationView.waitForComposition() = suspendCoroutine<LottieComposition> { continuation ->
-        addLottieOnCompositionLoadedListener { composition ->
-            continuation.resume(composition)
-        }
-    }
-
-    private suspend fun LottieAnimationView.waitForFrame(targetFrame: Int) = suspendCoroutine<Unit> { continuation ->
-        addAnimatorUpdateListener(object: ValueAnimator.AnimatorUpdateListener {
-            override fun onAnimationUpdate(animation: ValueAnimator?) {
-                if (this@waitForFrame.frame >= targetFrame) {
-                    removeUpdateListener(this)
-                    continuation.resume(Unit)
-                }
-            }
-        })
-    }
-
-    private suspend fun LottieAnimationView.waitForRepetitions(targetRepetitions: Int) = suspendCancellableCoroutine<Unit> { continuation ->
-        val listener = object: AnimatorListenerAdapter() {
-            var repetitions = 0
-            override fun onAnimationRepeat(animation: Animator?) {
-                repetitions += 1
-                if (repetitions >= targetRepetitions) {
-                    removeAnimatorListener(this)
-                    continuation.resume(Unit)
-                }
-            }
-        }
-        continuation.invokeOnCancellation {
-            removeAnimatorListener(listener)
-        }
-        addAnimatorListener(listener)
-    }
-
     private suspend fun playLoopedAnimation(animation: LottieAnimationView) = coroutineScope {
         // Get the animation
         val composition = animation.composition ?: animation.waitForComposition()
@@ -107,9 +64,7 @@ class LoopingAnimationActivity : AppCompatActivity(), CoroutineScope {
         val repeatJob = launch {
             animation.waitForRepetitions(2)
         }
-        animation.setOnClickListener {
-            repeatJob.cancel()
-        }
+        animation.setOnClickListener { repeatJob.cancel() }
         repeatJob.join()
         animation.setOnClickListener(null)
 
@@ -119,9 +74,5 @@ class LoopingAnimationActivity : AppCompatActivity(), CoroutineScope {
         // Coin floating
         animation.waitForFrame(END_LOOP_START_FRAME)
         animation.setMinFrame(END_LOOP_START_FRAME)
-    }
-
-    private fun dlog(s: String) {
-        Log.d("DEBUG", s)
     }
 }
