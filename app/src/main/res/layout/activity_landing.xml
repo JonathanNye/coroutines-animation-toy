@@ -20,6 +20,13 @@
             android:id="@+id/activity_landing_looping_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:text="@string/looping_animation" />
+
+    <Button
+            android:id="@+id/activity_landing_interactive_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/interactive_animation" />
 
 </LinearLayout>

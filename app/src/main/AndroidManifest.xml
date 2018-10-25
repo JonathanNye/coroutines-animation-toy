@@ -20,6 +20,8 @@
         </activity>
         <activity android:name=".BareAnimationActivity">
         </activity>
+        <activity android:name=".InteractiveAnimationActivity">
+        </activity>
     </application>
 
 </manifest>

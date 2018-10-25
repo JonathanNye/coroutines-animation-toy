@@ -18,5 +18,9 @@ class LandingActivity : AppCompatActivity() {
         findViewById<View>(R.id.activity_landing_looping_button).setOnClickListener {
             startActivity(Intent(this, LoopingAnimationActivity::class.java))
         }
+
+        findViewById<View>(R.id.activity_landing_interactive_button).setOnClickListener {
+            startActivity(Intent(this, InteractiveAnimationActivity::class.java))
+        }
     }
 }

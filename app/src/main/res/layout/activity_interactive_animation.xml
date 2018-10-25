@@ -29,4 +29,21 @@
             app:lottie_autoPlay="false"
             app:lottie_loop="true"/>
 
+    <TextView
+            android:id="@+id/debug_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+
+    <Button
+            android:id="@+id/continue_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:visibility="invisible"
+            android:text="@string/continue_button"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

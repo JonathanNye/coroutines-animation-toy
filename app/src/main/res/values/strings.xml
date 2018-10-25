@@ -3,4 +3,6 @@
     <string name="reset">Reset</string>
     <string name="bare_animation">Bare Animation</string>
     <string name="looping_animation">Looping Animation</string>
+    <string name="interactive_animation">Interactive Animation</string>
+    <string name="continue_button">continue</string>
 </resources>
