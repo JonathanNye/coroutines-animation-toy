@@ -69,8 +69,16 @@ class InteractiveAnimationActivity : AppCompatActivity(), CoroutineScope {
 
         // Box wiggles
         val repeatJob = launch {
-            animation.suspendForRepetitions(2) { rep ->
+
+            // Boring version, can't suspend in block
+            //animation.suspendForRepetitions(2) { rep ->
+            //      debug("repetition $rep")
+            //  }
+
+            // Spicy version, suspend all the way down!
+            animation.suspendForRepetitionsWithSuspendingCallback(2) { rep ->
                 debug("repetition $rep")
+                continueButton.suspendForClick(animation)
             }
         }
         animation.setOnClickListener { repeatJob.cancel() }

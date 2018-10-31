@@ -8,6 +8,8 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -72,6 +74,29 @@ suspend fun LottieAnimationView.suspendForRepetitions(targetRepetitions: Int, on
         removeAnimatorListener(listener)
     }
     addAnimatorListener(listener)
+}
+
+suspend fun LottieAnimationView.suspendForRepetitionsWithSuspendingCallback(targetRepetitions: Int, onRepeat: suspend (Int) -> Unit) = coroutineScope {
+    suspendCancellableCoroutine<Unit> { continuation ->
+        val listener = object : AnimatorListenerAdapter() {
+            var repetitions = 0
+            override fun onAnimationRepeat(animation: Animator?) {
+                repetitions += 1
+                val listenerRef = this // AnimatorListenerAdapter
+                launch {
+                    onRepeat.invoke(repetitions)
+                    if (repetitions >= targetRepetitions) {
+                        removeAnimatorListener(listenerRef)
+                        continuation.resume(Unit)
+                    }
+                }
+            }
+        }
+        continuation.invokeOnCancellation {
+            removeAnimatorListener(listener)
+        }
+        addAnimatorListener(listener)
+    }
 }
 
 suspend fun View.suspendForClick(animation: LottieAnimationView) = suspendCoroutine<Unit> { continuation ->
