@@ -90,13 +90,11 @@ class InteractiveAnimationActivity : AppCompatActivity(), CoroutineScope {
         animation.suspendForFrame(START_LOOP_END_FRAME)
         debug("box opening")
         continueButton.suspendForClick(animation)
-        animation.resumeAnimation()
 
         // Coin floating
         animation.suspendForFrame(END_LOOP_START_FRAME)
         debug("coin floating")
         continueButton.suspendForClick(animation)
-        animation.resumeAnimation()
         animation.setMinFrame(END_LOOP_START_FRAME)
     }
 
