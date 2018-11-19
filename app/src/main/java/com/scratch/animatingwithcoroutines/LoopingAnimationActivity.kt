@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.suspendCoroutine
 
 class LoopingAnimationActivity : AppCompatActivity(), CoroutineScope {
 
@@ -22,7 +20,7 @@ class LoopingAnimationActivity : AppCompatActivity(), CoroutineScope {
     private var animationJob: Job? = null
 
     override val coroutineContext: CoroutineContext
-        get() = job
+        get() = Main + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +43,7 @@ class LoopingAnimationActivity : AppCompatActivity(), CoroutineScope {
 
     private fun startAnimationLooping(animation: LottieAnimationView) {
         animationJob?.cancel()
-        animationJob = launch(context = Main) {
+        animationJob = launch {
             playLoopedAnimation(animation)
         }
     }

@@ -7,6 +7,7 @@ import android.view.View.INVISIBLE
 import android.widget.TextView
 import com.airbnb.lottie.LottieAnimationView
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Main
 import kotlin.coroutines.CoroutineContext
 
 class InteractiveAnimationActivity : AppCompatActivity(), CoroutineScope {
@@ -23,7 +24,7 @@ class InteractiveAnimationActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var continueButton: View
 
     override val coroutineContext: CoroutineContext
-        get() = job
+        get() = Main + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +50,7 @@ class InteractiveAnimationActivity : AppCompatActivity(), CoroutineScope {
 
     private fun startAnimationLooping(animation: LottieAnimationView) {
         animationJob?.cancel()
-        animationJob = launch(context = Dispatchers.Main) {
+        animationJob = launch {
             playLoopedAnimation(animation)
         }
     }
@@ -81,7 +82,10 @@ class InteractiveAnimationActivity : AppCompatActivity(), CoroutineScope {
                 continueButton.suspendForClick(animation)
             }
         }
-        animation.setOnClickListener { repeatJob.cancel() }
+        animation.setOnClickListener {
+            repeatJob.cancel()
+            debug("cancelled repeat")
+        }
         repeatJob.join()
         animation.setOnClickListener(null)
 
